@@ -23,7 +23,7 @@ export default class QRCode extends PureComponent {
     /* an image source object. example {uri: 'base64string'} or {require('pathToImage')} */
     logo: RNImage.propTypes.source,
     /* logo size in pixels */
-    logoSize: PropTypes.number,
+    logoSize: PropTypes.array,
     /* the logo gets a filled rectangular background with this color. Use 'transparent'
          if your logo already has its own backdrop. Default = same as backgroundColor */
     logoBackgroundColor: PropTypes.string,
@@ -46,7 +46,7 @@ export default class QRCode extends PureComponent {
     size: DEFAULT_SIZE,
     color: 'black',
     backgroundColor: DEFAULT_BG_COLOR,
-    logoSize: DEFAULT_SIZE * 0.2,
+    logoSize: [DEFAULT_SIZE * 0.2, DEFAULT_SIZE * 0.2],
     logoBackgroundColor: DEFAULT_BG_COLOR,
     logoMargin: 2,
     logoBorderRadius: 0,
@@ -115,8 +115,14 @@ export default class QRCode extends PureComponent {
       logo, logoSize, logoMargin, logoBackgroundColor, logoBorderRadius
     } = this.props
 
-    const logoPosition = size / 2 - logoSize / 2 - logoMargin
-    const logoWrapperSize = logoSize + logoMargin * 2
+    const logoX = size / 2 - logoSize[0] / 2 - logoMargin
+    const logoY = size / 2 - logoSize[1] / 2 - logoMargin
+    const logoWrapperSize = [
+      logoSize[0] + logoMargin * 2,
+      logoSize[1] + logoMargin * 2
+    ]
+      
+    
     const logoWrapperBorderRadius = logoBorderRadius + (logoBorderRadius && logoMargin)
 
     return (
@@ -124,16 +130,16 @@ export default class QRCode extends PureComponent {
         <Defs>
           <ClipPath id='clip-wrapper'>
             <Rect
-              width={logoWrapperSize}
-              height={logoWrapperSize}
+              width={logoWrapperSize[0]}
+              height={logoWrapperSize[1]}
               rx={logoWrapperBorderRadius}
               ry={logoWrapperBorderRadius}
             />
           </ClipPath>
           <ClipPath id='clip-logo'>
             <Rect
-              width={logoSize}
-              height={logoSize}
+              width={logoSize[0]}
+              height={logoSize[1]}
               rx={logoBorderRadius}
               ry={logoBorderRadius}
             />
@@ -152,17 +158,17 @@ export default class QRCode extends PureComponent {
           />
         )}
         {logo && (
-          <G x={logoPosition} y={logoPosition}>
+          <G x={logoX} y={logoY}>
             <Rect
-              width={logoWrapperSize}
-              height={logoWrapperSize}
+              width={logoWrapperSize[0]}
+              height={logoWrapperSize[1]}
               fill={logoBackgroundColor}
               clipPath='url(#clip-wrapper)'
             />
             <G x={logoMargin} y={logoMargin}>
               <Image
-                width={logoSize}
-                height={logoSize}
+                width={logoSize[0]}
+                height={logoSize[1]}
                 preserveAspectRatio='xMidYMid slice'
                 href={logo}
                 clipPath='url(#clip-logo)'
